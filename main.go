@@ -18,7 +18,7 @@ func main() {
 	} else {
 		fmt.Println("Het kenteken is niet geldig u mag niet door 😜)")
 	}
-	//test
+	//testinghihi
 }
 func Bepaalgroet() string {
 	hour := time.Now().Hour()
