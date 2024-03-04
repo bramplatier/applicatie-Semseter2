@@ -44,7 +44,7 @@ func main() {
 		case 4:
 			updateUserStatus()
 		case 5:
-			fmt.Println("Tot ziens!")
+			fmt.Println("Tot ziens! 😘")
 			os.Exit(0)
 		default:
 			fmt.Println("Ongeldige keuze, probeer opnieuw.")
@@ -77,7 +77,7 @@ func registerKenteken() {
 func checkToegangPark() {
 	var kenteken string
 
-	fmt.Print("Hallo, wat is uw kenteken? ")
+	fmt.Print("Hallo, wat is uw kenteken?🤔 ")
 	fmt.Scanln(&kenteken)
 
 	bookings, err := loadBookingsFromFile("bookings.json")
@@ -123,23 +123,30 @@ func removeUser() {
 	}
 
 	var kenteken string
-	fmt.Print("Wat is het kenteken van de gebruiker die u wilt verwijderen? ")
+	fmt.Print("❌ Wat is het kenteken van de gebruiker die u wilt verwijderen? ❌ ")
 	fmt.Scanln(&kenteken)
 
-	var updatedBookings []Booking
-	var found bool
-
+	var userToDelete Booking
 	for _, booking := range bookings {
-		if booking.Kenteken != kenteken {
-			updatedBookings = append(updatedBookings, booking)
-		} else {
-			found = true
+		if booking.Kenteken == kenteken {
+			userToDelete = booking
+			break
 		}
 	}
 
-	if !found {
-		fmt.Println("Gebruiker niet gevonden.")
+	fmt.Printf("Weet u zeker dat u gebruiker %s met kenteken %s wilt verwijderen? (ja/nee): ", userToDelete.Name, userToDelete.Kenteken)
+	var confirm string
+	fmt.Scanln(&confirm)
+	if strings.ToLower(confirm) != "ja" {
+		fmt.Println("Verwijdering geannuleerd.")
 		return
+	}
+
+	var updatedBookings []Booking
+	for _, booking := range bookings {
+		if booking.Kenteken != kenteken {
+			updatedBookings = append(updatedBookings, booking)
+		}
 	}
 
 	if err := writeBookingsToFile(updatedBookings, "bookings.json"); err != nil {
@@ -160,9 +167,9 @@ func updateUserStatus() {
 	for _, booking := range bookings {
 		var status string
 		if booking.Active {
-			status = "actief"
+			status = "actief ☑"
 		} else {
-			status = "niet actief"
+			status = "niet actief ❌"
 		}
 		fmt.Printf("- Naam: %s, Kenteken: %s, Status: %s\n", booking.Name, booking.Kenteken, status)
 	}
@@ -201,9 +208,9 @@ func updateUserStatus() {
 		return
 	}
 	if active {
-		fmt.Println("Gebruiker succesvol geactiveerd")
+		fmt.Println("Gebruiker succesvol geactiveerd 😍")
 	} else {
-		fmt.Println("Gebruiker succesvol gedeactiveerd")
+		fmt.Println("Gebruiker succesvol gedeactiveerd 👌")
 	}
 }
 
