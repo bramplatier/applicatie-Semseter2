@@ -1,50 +1,62 @@
 [
     {
         "name": "Marco",
-        "kenteken": "1-AAB-11"
+        "kenteken": "1-AAB-11",
+        "active": false
     },
     {
         "name": "Mark",
-        "kenteken": "1-BBB-11"
+        "kenteken": "1-BBB-11",
+        "active": false
     },
     {
         "name": "New Customer",
-        "kenteken": "2-sss-22"
-    },
-    {
-        "name": "New Customer",
-        "kenteken": "kjads"
+        "kenteken": "2-sss-22",
+        "active": false
     },
     {
         "name": "stijn",
-        "kenteken": "sdrftyuiop"
+        "kenteken": "sdrftyuiop",
+        "active": false
     },
     {
         "name": "stijn",
-        "kenteken": "weetikveel"
+        "kenteken": "weetikveel",
+        "active": false
     },
     {
         "name": "bram",
-        "kenteken": "78-wer-2"
+        "kenteken": "78-wer-2",
+        "active": false
     },
     {
         "name": "Jordy",
-        "kenteken": "123456"
+        "kenteken": "123456",
+        "active": false
     },
     {
         "name": "test",
-        "kenteken": "23"
+        "kenteken": "23",
+        "active": false
     },
     {
         "name": "test",
-        "kenteken": "i"
+        "kenteken": "i",
+        "active": false
     },
     {
         "name": "neger",
-        "kenteken": "rffd71"
+        "kenteken": "rffd71",
+        "active": true
     },
     {
         "name": "jemama",
-        "kenteken": "tn-666-y"
+        "kenteken": "tn-666-y",
+        "active": false
+    },
+    {
+        "name": "joep",
+        "kenteken": "sasaas",
+        "active": true
     }
 ]

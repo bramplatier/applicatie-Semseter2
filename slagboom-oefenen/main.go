@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -21,12 +22,14 @@ func init() {
 }
 
 func main() {
-	fmt.Printf("%s! Beste gebruiker, wat wil je doen?\n", bepaalGroet())
+	fmt.Printf("%s! Beste gebruiker, wat wil je doen?\n", Bepaalgroet())
 	var choice int
 	for {
 		fmt.Println("1. Kenteken registreren")
 		fmt.Println("2. Toegang park controleren")
-		fmt.Println("3. Exit")
+		fmt.Println("3. Gebruiker verwijderen")
+		fmt.Println("4. Gebruiker status wijzigen")
+		fmt.Println("5. Exit")
 		fmt.Print("Maak je keuze: ")
 
 		fmt.Scanln(&choice)
@@ -37,6 +40,10 @@ func main() {
 		case 2:
 			checkToegangPark()
 		case 3:
+			removeUser()
+		case 4:
+			updateUserStatus()
+		case 5:
 			fmt.Println("Tot ziens!")
 			os.Exit(0)
 		default:
@@ -53,17 +60,18 @@ func registerKenteken() {
 	fmt.Print("Wat is het kenteken? ")
 	fmt.Scanln(&kenteken)
 
-	bookings, err := laatBookingsNaarFile("bookings.json")
+	bookings, err := loadBookingsFromFile("bookings.json")
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	bookings = append(bookings, Booking{Name: voornaam, Kenteken: kenteken})
-	if err := schrijfBookingsNaarFile(bookings, "bookings.json"); err != nil {
+	bookings = append(bookings, Booking{Name: voornaam, Kenteken: kenteken, Active: true})
+	if err := writeBookingsToFile(bookings, "bookings.json"); err != nil {
 		log.Println("Error writing to JSON file:", err)
 		return
 	}
+	fmt.Println("Kenteken is succesvol toegevoegd aan het JSON-bestand")
 }
 
 func checkToegangPark() {
@@ -72,7 +80,7 @@ func checkToegangPark() {
 	fmt.Print("Hallo, wat is uw kenteken? ")
 	fmt.Scanln(&kenteken)
 
-	bookings, err := laatBookingsNaarFile("bookings.json")
+	bookings, err := loadBookingsFromFile("bookings.json")
 	if err != nil {
 		log.Println(err)
 		return
@@ -96,7 +104,110 @@ func checkToegangPark() {
 	}
 }
 
-func laatBookingsNaarFile(filename string) ([]Booking, error) {
+func removeUser() {
+	bookings, err := loadBookingsFromFile("bookings.json")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	fmt.Println("Lijst van gebruikers:")
+	for _, booking := range bookings {
+		var status string
+		if booking.Active {
+			status = "actief"
+		} else {
+			status = "niet actief"
+		}
+		fmt.Printf("- Naam: %s, Kenteken: %s, Status: %s\n", booking.Name, booking.Kenteken, status)
+	}
+
+	var kenteken string
+	fmt.Print("Wat is het kenteken van de gebruiker die u wilt verwijderen? ")
+	fmt.Scanln(&kenteken)
+
+	var updatedBookings []Booking
+	var found bool
+
+	for _, booking := range bookings {
+		if booking.Kenteken != kenteken {
+			updatedBookings = append(updatedBookings, booking)
+		} else {
+			found = true
+		}
+	}
+
+	if !found {
+		fmt.Println("Gebruiker niet gevonden.")
+		return
+	}
+
+	if err := writeBookingsToFile(updatedBookings, "bookings.json"); err != nil {
+		log.Println("Error writing to JSON file:", err)
+		return
+	}
+	fmt.Println("Gebruiker succesvol verwijderd")
+}
+
+func updateUserStatus() {
+	bookings, err := loadBookingsFromFile("bookings.json")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	fmt.Println("Lijst van gebruikers:")
+	for _, booking := range bookings {
+		var status string
+		if booking.Active {
+			status = "actief"
+		} else {
+			status = "niet actief"
+		}
+		fmt.Printf("- Naam: %s, Kenteken: %s, Status: %s\n", booking.Name, booking.Kenteken, status)
+	}
+
+	var kenteken string
+	var active bool
+
+	fmt.Print("Wat is het kenteken van de gebruiker waarvan u de status wilt wijzigen? ")
+	fmt.Scanln(&kenteken)
+
+	fmt.Print("Wilt u deze gebruiker activeren? (ja/nee): ")
+	var answer string
+	fmt.Scanln(&answer)
+	if strings.ToLower(answer) == "ja" {
+		active = true
+	} else {
+		active = false
+	}
+
+	var found bool
+	for i, booking := range bookings {
+		if booking.Kenteken == kenteken {
+			found = true
+			bookings[i].Active = active
+			break
+		}
+	}
+
+	if !found {
+		fmt.Println("Gebruiker niet gevonden.")
+		return
+	}
+
+	if err := writeBookingsToFile(bookings, "bookings.json"); err != nil {
+		log.Println("Error writing to JSON file:", err)
+		return
+	}
+	if active {
+		fmt.Println("Gebruiker succesvol geactiveerd")
+	} else {
+		fmt.Println("Gebruiker succesvol gedeactiveerd")
+	}
+}
+
+func loadBookingsFromFile(filename string) ([]Booking, error) {
 	var bookings []Booking
 
 	jsonFile, err := os.Open(filename)
@@ -113,7 +224,7 @@ func laatBookingsNaarFile(filename string) ([]Booking, error) {
 	return bookings, nil
 }
 
-func schrijfBookingsNaarFile(bookings []Booking, filename string) error {
+func writeBookingsToFile(bookings []Booking, filename string) error {
 	file, err := os.Create(filename)
 	if err != nil {
 		return err
@@ -128,16 +239,7 @@ func schrijfBookingsNaarFile(bookings []Booking, filename string) error {
 	return nil
 }
 
-func BekijkKentekens(bookings []Booking, kenteken string) bool {
-	for _, booking := range bookings {
-		if booking.Kenteken == kenteken {
-			return true
-		}
-	}
-	return false
-}
-
-func bepaalGroet() string {
+func Bepaalgroet() string {
 	hour := time.Now().Hour()
 	var groet string
 	if hour >= 7 && hour < 12 {
@@ -155,4 +257,5 @@ func bepaalGroet() string {
 type Booking struct {
 	Name     string `json:"name"`
 	Kenteken string `json:"kenteken"`
+	Active   bool   `json:"active"`
 }
