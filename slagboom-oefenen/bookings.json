@@ -20,8 +20,33 @@
         "active": true
     },
     {
-        "name": "4",
-        "kenteken": "4",
+        "name": "test",
+        "kenteken": "1234",
+        "active": false
+    },
+    {
+        "name": "1",
+        "kenteken": "1",
+        "active": false
+    },
+    {
+        "name": "Karsten",
+        "kenteken": "s",
+        "active": true
+    },
+    {
+        "name": "y",
+        "kenteken": "ZV-781-F",
+        "active": true
+    },
+    {
+        "name": "bram",
+        "kenteken": "pla",
+        "active": true
+    },
+    {
+        "name": "wertyui",
+        "kenteken": "123",
         "active": true
     }
 ]

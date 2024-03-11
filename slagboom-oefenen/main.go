@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+var dataPath string
 var data []Booking
 
 func init() {
@@ -22,19 +23,21 @@ func init() {
 	writer := io.MultiWriter(os.Stdout, logFile)
 	log.SetOutput(writer)
 
-	dataPath, found := os.LookupEnv("fonteyn_app_config_path")
+	TDdataPath, found := os.LookupEnv("fonteyn_app_data_path")
 	if !found {
 		dataPath = "./bookings.json"
 	}
-	_, err = os.Stat(dataPath)
+
+	_, err = os.Stat(TDdataPath)
 	if err != nil {
-		log.Fatalf("config file not found at %v", dataPath)
+		log.Fatalf("data file not found at %v", TDdataPath)
 	}
 
-	data, err = loadBookingsFromFile(dataPath)
+	data, err = loadBookingsFromFile(TDdataPath)
 	if err != nil {
 		log.Fatalf("couldn't read data file %v", err)
 	}
+	dataPath = TDdataPath
 }
 
 func main() {
@@ -71,19 +74,19 @@ func main() {
 func registerKenteken() {
 	var voornaam, kenteken string
 
-	fmt.Print("Wat is de gebruikersnaam? ")
+	fmt.Println("Wat is de gebruikersnaam? ")
 	fmt.Scanln(&voornaam)
-	fmt.Print("Wat is het kenteken? ")
+	fmt.Println("Wat is het kenteken? ")
 	fmt.Scanln(&kenteken)
 
-	bookings, err := loadBookingsFromFile("bookings.json")
+	bookings, err := loadBookingsFromFile(dataPath)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
 	bookings = append(bookings, Booking{Name: voornaam, Kenteken: kenteken, Active: true})
-	if err := writeBookingsToFile(bookings, "bookings.json"); err != nil {
+	if err := writeBookingsToFile(bookings, dataPath); err != nil {
 		log.Fatalf("Error writing to JSON file:", err)
 		return
 	}
@@ -98,7 +101,7 @@ func checkToegangPark() {
 	fmt.Print("Hallo, wat is uw kenteken?🤔 ")
 	fmt.Scanln(&kenteken)
 
-	bookings, err := loadBookingsFromFile("bookings.json")
+	bookings, err := loadBookingsFromFile(dataPath)
 	if err != nil {
 		log.Println(err)
 		return
@@ -120,7 +123,7 @@ func checkToegangPark() {
 }
 
 func removeUser() {
-	bookings, err := loadBookingsFromFile("bookings.json")
+	bookings, err := loadBookingsFromFile(dataPath)
 	if err != nil {
 		log.Println(err)
 		return
@@ -164,7 +167,7 @@ func removeUser() {
 		}
 	}
 
-	if err := writeBookingsToFile(updatedBookings, "bookings.json"); err != nil {
+	if err := writeBookingsToFile(updatedBookings, dataPath); err != nil {
 		log.Fatalf("Error writing to JSON file:", err)
 		return
 	}
@@ -172,7 +175,7 @@ func removeUser() {
 }
 
 func updateUserStatus() {
-	bookings, err := loadBookingsFromFile("bookings.json")
+	bookings, err := loadBookingsFromFile(dataPath)
 	if err != nil {
 		log.Println(err)
 		return
@@ -218,7 +221,7 @@ func updateUserStatus() {
 		return
 	}
 
-	if err := writeBookingsToFile(bookings, "bookings.json"); err != nil {
+	if err := writeBookingsToFile(bookings, dataPath); err != nil {
 		log.Println("Error writing to JSON file:", err)
 		return
 	}
