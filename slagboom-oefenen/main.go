@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+var data []Booking
+
 func init() {
 	logFile, err := os.OpenFile("trace.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
@@ -19,6 +21,20 @@ func init() {
 
 	writer := io.MultiWriter(os.Stdout, logFile)
 	log.SetOutput(writer)
+
+	dataPath, found := os.LookupEnv("fonteyn_app_config_path")
+	if !found {
+		dataPath = "./bookings.json"
+	}
+	_, err = os.Stat(dataPath)
+	if err != nil {
+		log.Fatalf("config file not found at %v", dataPath)
+	}
+
+	data, err = loadBookingsFromFile(dataPath)
+	if err != nil {
+		log.Fatalf("couldn't read data file %v", err)
+	}
 }
 
 func main() {
@@ -68,14 +84,16 @@ func registerKenteken() {
 
 	bookings = append(bookings, Booking{Name: voornaam, Kenteken: kenteken, Active: true})
 	if err := writeBookingsToFile(bookings, "bookings.json"); err != nil {
-		log.Println("Error writing to JSON file:", err)
+		log.Fatalf("Error writing to JSON file:", err)
 		return
 	}
-	fmt.Println("Kenteken is succesvol toegevoegd aan het JSON-bestand")
+	fmt.Println("Kenteken is succesvol toegevoegd")
 }
 
 func checkToegangPark() {
 	var kenteken string
+	var found bool
+	var gebruikersnaam string
 
 	fmt.Print("Hallo, wat is uw kenteken?🤔 ")
 	fmt.Scanln(&kenteken)
@@ -85,9 +103,6 @@ func checkToegangPark() {
 		log.Println(err)
 		return
 	}
-
-	var found bool
-	var gebruikersnaam string
 
 	for _, booking := range bookings {
 		if booking.Kenteken == kenteken {
@@ -150,7 +165,7 @@ func removeUser() {
 	}
 
 	if err := writeBookingsToFile(updatedBookings, "bookings.json"); err != nil {
-		log.Println("Error writing to JSON file:", err)
+		log.Fatalf("Error writing to JSON file:", err)
 		return
 	}
 	fmt.Println("Gebruiker succesvol verwijderd")

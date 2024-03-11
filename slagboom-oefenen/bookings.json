@@ -1,10 +1,5 @@
 [
     {
-        "name": "bram",
-        "kenteken": "hshsh",
-        "active": true
-    },
-    {
         "name": "god",
         "kenteken": "god",
         "active": true
@@ -12,6 +7,21 @@
     {
         "name": "bram",
         "kenteken": "platier",
+        "active": false
+    },
+    {
+        "name": "hpoi",
+        "kenteken": "123456789",
+        "active": true
+    },
+    {
+        "name": "karsten",
+        "kenteken": "test123",
+        "active": true
+    },
+    {
+        "name": "4",
+        "kenteken": "4",
         "active": true
     }
 ]
